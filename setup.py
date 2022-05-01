@@ -1,14 +1,11 @@
 from setuptools import setup, find_packages
-import eckity
-
-VERSION = eckity.__version__
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name='eckity',
-    version=VERSION,
+    version='0.1.0',
     author='Moshe Sipper',
     author_email='sipper@gmail.com',
     description='EC-KitY: Evolutionary Computation Tool Kit in Python.',
