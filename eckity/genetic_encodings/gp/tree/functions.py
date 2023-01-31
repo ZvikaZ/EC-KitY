@@ -80,6 +80,16 @@ def f_tan(x):
     return np.tan(x)
 
 
+def f_atan2(x, y):
+    """atan2(x,y)"""
+    return np.arctan2(x, y)
+
+
+def f_hypot(x, y):
+    """hypot(x,y)"""
+    return np.hypot(x, y)
+
+
 def f_iflte0(x, y, z):
     """if x <= 0 return y else return z"""
     return np.where(x <= 0, y, z)

@@ -2,6 +2,7 @@
 This module implements the SimpleEvolution class.
 """
 
+import logging
 from time import time
 from overrides import overrides
 
@@ -11,6 +12,7 @@ from eckity.evaluators.simple_population_evaluator import SimplePopulationEvalua
 from eckity.termination_checkers.threshold_from_target_termination_checker\
     import ThresholdFromTargetTerminationChecker
 
+logger = logging.getLogger(__name__)
 
 class SimpleEvolution(Algorithm):
     """
@@ -146,6 +148,8 @@ class SimpleEvolution(Algorithm):
         # breed population
         self.breeder.breed(self.population)
 
+        self.update_gen(self.population, gen)
+
         # Evaluate the entire population and get the best individual
         self.best_of_gen = self.population_evaluator.act(self.population)
 
@@ -157,6 +161,11 @@ class SimpleEvolution(Algorithm):
             self.best_of_run_evaluator = best_of_run_subpopulation.evaluator
 
         self.worst_of_gen = self.population.sub_populations[0].get_worst_individual()
+
+    def update_gen(self, population, gen):
+        for subpopulation in population.sub_populations:
+            for ind in subpopulation.individuals:
+                ind.gen = gen
 
     def execute(self, **kwargs):
         """
@@ -184,7 +193,7 @@ class SimpleEvolution(Algorithm):
         """
         # todo should move to finisher
         self.best_of_run_.show()
-        print(self.best_of_run_.get_pure_fitness())
+        logger.info(f'Best fitness: {self.best_of_run_.get_pure_fitness()}')
 
     def get_average_fitness(self):  # TODO check if it should be here or register statistic to breeder or sub pop
         return self.population.get_average_fitness()
@@ -198,7 +207,8 @@ class SimpleEvolution(Algorithm):
                 "termination_checker": self.termination_checker,
                 "max_generation": self.max_generation,
                 "events": self.events,
-                "max_workers": self.max_workers
+                "max_workers": self.max_workers,
+                "generation_num": self.generation_num,
             }
 
         # default case

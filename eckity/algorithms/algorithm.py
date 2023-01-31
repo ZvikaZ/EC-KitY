@@ -6,6 +6,7 @@ from abc import abstractmethod
 from concurrent.futures.thread import ThreadPoolExecutor
 import random
 from time import time
+import logging
 
 from overrides import overrides
 
@@ -17,6 +18,7 @@ from eckity.subpopulation import Subpopulation
 SEED_MIN_VALUE = 0
 SEED_MAX_VALUE = 1000000
 
+logger = logging.getLogger(__name__)
 
 class Algorithm(Operator):
 
@@ -209,12 +211,15 @@ class Algorithm(Operator):
         Initialize seed, ThreadPoolExecutor and relevant operators
         """
         self.set_random_seed(self.random_seed)
-        print('debug: random seed =', self.random_seed)
+        logger.debug(f'random seed = {self.random_seed}')
         self.population_evaluator.set_executor(self.executor)
 
         for field in self.__dict__.values():
             if isinstance(field, Operator):
                 field.initialize()
+
+        for stat in self.statistics:
+            self.register('init', stat.write_statistics)
 
         self.create_population()
         self.best_of_run_ = self.population_evaluator.act(self.population)
@@ -224,7 +229,7 @@ class Algorithm(Operator):
         """
         Performs the evolutionary main loop
         """
-        for gen in range(self.max_generation):
+        for gen in range(1, self.max_generation):
             self.generation_num = gen
 
             self.set_generation_seed(self.next_seed())
